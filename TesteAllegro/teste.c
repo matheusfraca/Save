@@ -12,6 +12,7 @@
 
 const int LARGURA_TELA = 1280;
 const int ALTURA_TELA = 720;
+const int NUM_BALAS = 5;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,18 +30,18 @@ ALLEGRO_BITMAP *correto = NULL;
 ALLEGRO_BITMAP *navea = NULL;
 ALLEGRO_BITMAP *naveb = NULL;
 ALLEGRO_BITMAP *navec = NULL;
-ALLEGRO_BITMAP *IMG_tiro = NULL;
+ALLEGRO_BITMAP *bala = NULL;
 ALLEGRO_BITMAP *fundo_nivel = NULL;
 ALLEGRO_BITMAP *coracao = NULL;
 ALLEGRO_BITMAP *tampa_coracao = NULL;
 ALLEGRO_SAMPLE_ID *id_music = NULL;
-ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+
 
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
 
 // ########################################################################################################################################
-int NUM_BULLETS = 5;
+
 
 enum teclas{UP, DOWN, LEFT, RIGHT, SPACE};
 
@@ -57,21 +58,13 @@ bool btcomecar_datela_escolha = false;
 bool tela_da_capa = true;
 bool saire = false;
 bool jogando = false;
-bool funcao_tiro = false;
 bool teclas[5] = {false, false, false, false, false};
 bool apagar_coracao = false;
 bool tampar1 = false;
 bool tampar2 = false;
 bool tampar3 = false;
-bool redraw = true;
-
-//void DrawShip(SpaceShip &ship);
 
 
-void InitBullet(Bullet bullet[], int size);
-void DrawBullet(Bullet bullet[], int size);
-void FireBullet(Bullet bullet[], int size);
-void UpdateBullet(Bullet bullet[], int size);
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -87,8 +80,8 @@ int main(void)
     int pos_x = 1202 / 2;
     int pos_y = 1200 / 2;
 
-    Bullet bullets[5];
-    InitBullet(bullets, NUM_BULLETS);
+
+
 
     if (!inicializar())
     {
@@ -119,9 +112,9 @@ int main(void)
     navea = al_load_bitmap("navea.png");
     naveb = al_load_bitmap("naveb.png");
     navec = al_load_bitmap("navec.png");
-    IMG_tiro = al_load_bitmap("tiro.png");
     coracao = al_load_bitmap("vida.png");
     tampa_coracao = al_load_bitmap("tampa.png");
+    bala = al_load_bitmap("tiros.png");
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
         // VERIFICAÇÃO DO CARREGAMENTO DO BACKGROUND (FUNDO)
@@ -532,7 +525,6 @@ int main(void)
                             break;
                             case ALLEGRO_KEY_SPACE:
                             teclas[SPACE] = true;
-				            FireBullet(bullets, NUM_BULLETS);
                             break;
                         }
                     }
@@ -552,12 +544,13 @@ int main(void)
                             case ALLEGRO_KEY_RIGHT:
                             teclas[RIGHT] = false;
                             break;
-                            case ALLEGRO_KEY_SPACE:
-                            teclas[SPACE] = false;
-                            break;
                         }
                     }
+                    if(teclas[SPACE]== true)
+                    {
 
+                        al_draw_bitmap(bala, 700, 30, 0);
+                    }
                     al_draw_bitmap(navea, pos_x, pos_y, 0);
                     pos_y -= teclas[UP] * 10;
                     pos_y += teclas[DOWN] * 10;
@@ -588,14 +581,6 @@ int main(void)
                        //tampar2 = true;
                        //tampar3 = true;
                     }
-                    if(redraw && al_is_event_queue_empty(event_queue))
-		            {
-			          redraw = false;
-//			          DrawShip(ship);
-			          DrawBullet(bullets, NUM_BULLETS);
-			          al_clear_to_color(al_map_rgb(0,0,0));
-                    }
-
                 }
 
 //=======================================================================================================
@@ -757,61 +742,15 @@ int main(void)
     al_destroy_bitmap(naveb);
     al_destroy_bitmap(navec);
     al_destroy_bitmap(correto);
-    al_destroy_bitmap(IMG_tiro);
     al_destroy_bitmap(coracao);
+    al_destroy_bitmap(bala);
     al_destroy_sample(musica_capa);
     al_destroy_event_queue(fila_eventos);
     al_destroy_display(janela);
 
     return 0;
 }
-//void DrawShip(SpaceShip &ship)
-//{
-//	al_draw_bitmap(navea, 0, 0, 0);
-//}
 
-void InitBullet(Bullet bullet[], int size)
-{
-	for(int i = 0; i < size; i++)
-	{
-		bullet[i].ID = BULLET;
-		bullet[i].speed = 10;
-		bullet[i].live = false;
-	}
-}
-void DrawBullet(Bullet bullet[], int size)
-{
-	for( int i = 0; i < size; i++)
-	{
-		if(bullet[i].live)
-			al_draw_filled_circle(bullet[i].x, bullet[i].y, 2, al_map_rgb(255, 255, 255));
-	}
-}
-//void FireBullet(Bullet bullet[], int size, SpaceShip &ship)
-//{
-//	for( int i = 0; i < size; i++)
-//	{
-//		if(!bullet[i].live)
-//		{
-//			bullet[i].x = ship.x + 17;
-//			bullet[i].y = ship.y;
-//			bullet[i].live = true;
-//			break;
-//		}
-//	}
-//}
-void UpdateBullet(Bullet bullet[], int size)
-{
-	for(int i = 0; i < size; i++)
-	{
-		if(bullet[i].live)
-		{
-			bullet[i].x += bullet[i].speed;
-			if(bullet[i].x > WIDTH)
-				bullet[i].live = false;
-		}
-	}
-}
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
         //INICIALIZAÇÕES E FUNÇÕES
