@@ -12,7 +12,8 @@
 
 const int LARGURA_TELA = 1280;
 const int ALTURA_TELA = 720;
-const int NUM_BALAS = 5;
+const int NUM_BULLETS = 5;
+int i;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -64,6 +65,11 @@ bool tampar1 = false;
 bool tampar2 = false;
 bool tampar3 = false;
 
+void InitBullet(Bullet bullet[5], int size);
+void DrawBullet(Bullet bullet[5], int size);
+void FireBullet(Bullet bullet[5], int size);
+void UpdateBullet(Bullet bullet[5], int size);
+
 
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
@@ -79,6 +85,11 @@ int main(void)
 
     int pos_x = 1202 / 2;
     int pos_y = 1200 / 2;
+    int pos_xbala = navea;
+    int pos_ybala = 1200 / 2 - 30;
+
+    bool redraw = true;
+    Bullet bullets[5];
 
 
 
@@ -115,6 +126,7 @@ int main(void)
     coracao = al_load_bitmap("vida.png");
     tampa_coracao = al_load_bitmap("tampa.png");
     bala = al_load_bitmap("tiros.png");
+
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
         // VERIFICAÇÃO DO CARREGAMENTO DO BACKGROUND (FUNDO)
@@ -507,6 +519,7 @@ int main(void)
 
                 if(nave1 == true) // MOVER A NAVE COM O TECLADO PRESSIONADO
                 {
+
                     if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
                     {
                         switch(evento.keyboard.keycode)
@@ -544,12 +557,14 @@ int main(void)
                             case ALLEGRO_KEY_RIGHT:
                             teclas[RIGHT] = false;
                             break;
+
                         }
                     }
-                    if(teclas[SPACE]== true)
+                     if(teclas[SPACE]== true)
                     {
 
-                        al_draw_bitmap(bala, 700, 30, 0);
+                        al_draw_bitmap(bala, pos_x - 210, pos_y - 200,0);
+
                     }
                     al_draw_bitmap(navea, pos_x, pos_y, 0);
                     pos_y -= teclas[UP] * 10;
@@ -749,6 +764,48 @@ int main(void)
     al_destroy_display(janela);
 
     return 0;
+}
+void InitBullet(Bullet bullet[], int size)
+{
+	for( i = 0; i < size; i++)
+	{
+		bullet[i].ID = BULLET;
+		bullet[i].speed = 10;
+		bullet[i].live = false;
+	}
+}
+void DrawBullet(Bullet bullet[], int size)
+{
+	for( i = 0; i < size; i++)
+	{
+		if(bullet[i].live)
+			al_draw_filled_circle(bullet[i].x, bullet[i].y, 2, al_map_rgb(0, 0, 255));
+	}
+}
+void FireBullet(Bullet bullet[], int size)
+{
+	for( i = 0; i < size; i++)
+	{
+		if(!bullet[i].live)
+		{
+			bullet[i].x = 1202/2 + 17;
+			bullet[i].y = 1200;
+			bullet[i].live = true;
+			break;
+		}
+	}
+}
+void UpdateBullet(Bullet bullet[], int size)
+{
+	for( i = 0; i < size; i++)
+	{
+		if(bullet[i].live)
+		{
+			bullet[i].x += bullet[i].speed;
+			if(bullet[i].x > ALTURA_TELA)
+				bullet[i].live = false;
+		}
+	}
 }
 
 
